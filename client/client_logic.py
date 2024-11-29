@@ -26,13 +26,15 @@ def register_user(username, password):
         'password': password
     }
 
-    # Send data to the server (registration will always succeed)
+    # Send data to the server
     client_socket.send(json.dumps(user_data).encode('utf-8'))
-    client_socket.recv(1024).decode('utf-8')
+    response = client_socket.recv(1024).decode('utf-8')
 
-    # Registration is always successful, authenticate user
-    is_authenticated = True
-    return "Registration successful!"
+    # Registration is successful if no errors are returned
+    if response == "Registration successful!":
+        is_authenticated = True
+
+    return response
 
 
 # Function to login the user
@@ -55,10 +57,10 @@ def login_user(username, password):
 
     if response == "success":
         is_authenticated = True
-        return "Login successful!"
     else:
         is_authenticated = False
-        return "Login failed!"
+
+    return "Login successful!" if is_authenticated else "Login failed!"
 
 
 # Function to send a message to the server after the user is authenticated
@@ -71,8 +73,14 @@ def send_message_to_server(message):
     # Ensure the socket is initialized
     initialize_socket()
 
+    # Prepare the message data to be sent to the server
+    message_data = {
+        'action': 'message',
+        'message': message
+    }
+
     # Send the message to the server
-    client_socket.send(message.encode())
+    client_socket.send(json.dumps(message_data).encode('utf-8'))
 
     # Wait for the server's response
     response = client_socket.recv(1024).decode()
