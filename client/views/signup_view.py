@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QPushButton
 
+
 def signup_view():
     """Create and return the signup view."""
     view = QWidget()

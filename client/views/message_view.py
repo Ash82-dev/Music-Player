@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QPushButton
 
+
 def message_view():
     """Create and return the message sending view."""
     view = QWidget()

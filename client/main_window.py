@@ -8,6 +8,7 @@ from views.message_view import message_view
 class Window(QWidget):
     def __init__(self):
         super().__init__()
+        self.stacked_widget = QStackedWidget(self)
         self.setWindowTitle("Authentication")
         self.setGeometry(100, 100, 300, 250)
 
@@ -16,7 +17,6 @@ class Window(QWidget):
     def auth_view(self):
         """Set up the authentication views and layout."""
         # Create the QStackedWidget to hold the views
-        self.stacked_widget = QStackedWidget(self)
 
         # Create the views
         signup = signup_view()

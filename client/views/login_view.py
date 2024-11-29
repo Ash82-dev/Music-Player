@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QPushButton
 
+
 def login_view():
     """Create and return the login view."""
     view = QWidget()
