@@ -1,11 +1,28 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QStackedWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, \
+    QStackedWidget
 import client_logic
+
 
 class AuthWindow(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.signup_password_input = QLineEdit(self)
+        self.signup_password_label = QLabel("Password", self)
+        self.signup_username_input = QLineEdit(self)
+        self.signup_username_label = QLabel("Username", self)
+        self.message_input = QLineEdit(self)
+        self.send_button = QPushButton("Send", self)
+        self.message_label = QLabel("Enter your message", self)
+        self.switch_to_signup_button = QPushButton("Switch to Sign Up", self)
+        self.login_button = QPushButton("Login", self)
+        self.login_password_input = QLineEdit(self)
+        self.login_password_label = QLabel("Password", self)
+        self.login_username_input = QLineEdit(self)
+        self.login_username_label = QLabel("Username", self)
+        self.switch_to_login_button = QPushButton("Switch to Login", self)
+        self.signup_button = QPushButton("Sign Up", self)
         self.setWindowTitle("Authentication")
         self.setGeometry(100, 100, 300, 250)
 
@@ -35,14 +52,7 @@ class AuthWindow(QWidget):
         layout = QVBoxLayout(view)
 
         # Create widgets for signup
-        self.signup_username_label = QLabel("Username", self)
-        self.signup_username_input = QLineEdit(self)
-        self.signup_password_label = QLabel("Password", self)
-        self.signup_password_input = QLineEdit(self)
         self.signup_password_input.setEchoMode(QLineEdit.Password)
-
-        self.signup_button = QPushButton("Sign Up", self)
-        self.switch_to_login_button = QPushButton("Switch to Login", self)
 
         # Connect buttons
         self.signup_button.clicked.connect(self.handle_signup)
@@ -64,14 +74,7 @@ class AuthWindow(QWidget):
         layout = QVBoxLayout(view)
 
         # Create widgets for login
-        self.login_username_label = QLabel("Username", self)
-        self.login_username_input = QLineEdit(self)
-        self.login_password_label = QLabel("Password", self)
-        self.login_password_input = QLineEdit(self)
         self.login_password_input.setEchoMode(QLineEdit.Password)
-
-        self.login_button = QPushButton("Login", self)
-        self.switch_to_signup_button = QPushButton("Switch to Sign Up", self)
 
         # Connect buttons
         self.login_button.clicked.connect(self.handle_login)
@@ -93,9 +96,6 @@ class AuthWindow(QWidget):
         layout = QVBoxLayout(view)
 
         # Create widgets for sending messages
-        self.message_label = QLabel("Enter your message", self)
-        self.message_input = QLineEdit(self)
-        self.send_button = QPushButton("Send", self)
 
         # Connect the send button
         self.send_button.clicked.connect(self.send_message)
