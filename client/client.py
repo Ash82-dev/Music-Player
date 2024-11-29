@@ -1,19 +1,19 @@
-import socket
+import sys
+from PyQt5.QtWidgets import QApplication
+import client_gui
 
 
-def start_client():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('localhost', 12345))
+def main():
+    # Initialize the application
+    app = QApplication(sys.argv)
 
-    while True:
-        message = input("Enter a message: ")
-        if message.lower() == 'exit':
-            break
-        client.send(message.encode())
-        response = client.recv(1024).decode()
-        print(f"Server response: {response}")
-    client.close()
+    # Start the login/signup window
+    window = client_gui.SignupWindow()
+    window.show()
+
+    # Start the application's event loop
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
-    start_client()
+    main()
