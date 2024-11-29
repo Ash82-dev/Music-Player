@@ -8,7 +8,7 @@ def main():
     app = QApplication(sys.argv)
 
     # Start the authentication window (signup by default)
-    window = client_gui.AuthWindow()  # This will start the AuthWindow
+    window = gui.AuthWindow()  # This will start the AuthWindow
     window.show()  # Display the authentication window
 
     # Start the application's event loop
