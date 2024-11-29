@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QPushButton, QLineEdit, QMessageBox
 import socket_manager
-from signup_view import signup_view
-from login_view import login_view
-from message_view import message_view
+from views.signup_view import signup_view
+from views.login_view import login_view
+from views.message_view import message_view
 
 
 class Window(QWidget):
