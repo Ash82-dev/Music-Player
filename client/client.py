@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-import client_gui  # Import your GUI class (AuthWindow)
+import client_gui
 
 
 def main():
