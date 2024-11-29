@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, \
     QStackedWidget
-import client_logic
+import socket_manager
 
 
 class AuthWindow(QWidget):
