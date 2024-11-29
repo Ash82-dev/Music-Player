@@ -1,9 +1,8 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QPushButton
 
-
-def message_view(window):
-    """Create the message sending view."""
-    view = QWidget(window)
+def message_view():
+    """Create and return the message sending view."""
+    view = QWidget()
     layout = QVBoxLayout(view)
 
     # Create widgets for sending messages
@@ -16,7 +15,7 @@ def message_view(window):
     layout.addWidget(message_input)
     layout.addWidget(send_button)
 
-    # Assign the widget objects so that other files can interact with them
+    # Set object names for easy reference
     message_input.setObjectName("message_input")
     send_button.setObjectName("Send")
 

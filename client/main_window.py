@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QPushButton, QLineEdit, QMessageBox
 import socket_manager
-from auth_view import auth_view
+from signup_view import signup_view
+from login_view import login_view
+from message_view import message_view
 
 
 class Window(QWidget):
@@ -9,20 +10,50 @@ class Window(QWidget):
         super().__init__()
         self.setWindowTitle("Authentication")
         self.setGeometry(100, 100, 300, 250)
-        auth_view(self)
+
+        self.auth_view()
+
+    def auth_view(self):
+        """Set up the authentication views and layout."""
+        # Create the QStackedWidget to hold the views
+        self.stacked_widget = QStackedWidget(self)
+
+        # Create the views
+        signup = signup_view()
+        login = login_view()
+        message = message_view()
+
+        # Add views to the stacked widget
+        self.stacked_widget.addWidget(signup)
+        self.stacked_widget.addWidget(login)
+        self.stacked_widget.addWidget(message)
+
+        # Set the initial view to the signup view
+        self.stacked_widget.setCurrentWidget(signup)
+
+        # Set the layout for the main window
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.stacked_widget)
+
+        # Connect buttons to actions
+        signup.findChild(QPushButton, "Sign Up").clicked.connect(self.handle_signup)
+        signup.findChild(QPushButton, "Switch to Login").clicked.connect(self.switch_to_login)
+        login.findChild(QPushButton, "Login").clicked.connect(self.handle_login)
+        login.findChild(QPushButton, "Switch to Sign Up").clicked.connect(self.switch_to_signup)
+        message.findChild(QPushButton, "Send").clicked.connect(self.send_message)
 
     def switch_to_login(self):
         """Switch to the login view."""
-        self.stacked_widget.setCurrentWidget(self.login_view)
+        self.stacked_widget.setCurrentWidget(self.stacked_widget.widget(1))
 
     def switch_to_signup(self):
         """Switch to the signup view."""
-        self.stacked_widget.setCurrentWidget(self.signup_view)
+        self.stacked_widget.setCurrentWidget(self.stacked_widget.widget(0))
 
     def handle_signup(self):
         """Handle the signup logic."""
-        username = self.signup_view.findChild(QLineEdit, "signup_username_input").text()
-        password = self.signup_view.findChild(QLineEdit, "signup_password_input").text()
+        username = self.stacked_widget.widget(0).findChild(QLineEdit, "signup_username_input").text()
+        password = self.stacked_widget.widget(0).findChild(QLineEdit, "signup_password_input").text()
 
         response = socket_manager.register_user(username, password)
         QMessageBox.information(self, "Success", response)
@@ -32,12 +63,12 @@ class Window(QWidget):
 
     def switch_to_message_window(self):
         """Switch to the message window after successful signup."""
-        self.stacked_widget.setCurrentWidget(self.message_view)
+        self.stacked_widget.setCurrentWidget(self.stacked_widget.widget(2))
 
     def handle_login(self):
         """Handle the login logic."""
-        username = self.login_view.findChild(QLineEdit, "login_username_input").text()
-        password = self.login_view.findChild(QLineEdit, "login_password_input").text()
+        username = self.stacked_widget.widget(1).findChild(QLineEdit, "login_username_input").text()
+        password = self.stacked_widget.widget(1).findChild(QLineEdit, "login_password_input").text()
 
         response = socket_manager.login_user(username, password)
         QMessageBox.information(self, "Success", response)
@@ -47,6 +78,6 @@ class Window(QWidget):
 
     def send_message(self):
         """Handle message sending."""
-        message = self.message_view.findChild(QLineEdit, "message_input").text()
+        message = self.stacked_widget.widget(2).findChild(QLineEdit, "message_input").text()
         response = socket_manager.send_message_to_server(message)
         QMessageBox.information(self, "Server Response", response)
