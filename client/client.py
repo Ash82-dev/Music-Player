@@ -1,17 +1,14 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-import gui
+import main_window
 
 
 def main():
-    # Initialize the application
     app = QApplication(sys.argv)
 
-    # Start the authentication window (signup by default)
-    window = gui.AuthWindow()  # This will start the AuthWindow
-    window.show()  # Display the authentication window
+    window = main_window.Window()
+    window.show()
 
-    # Start the application's event loop
     sys.exit(app.exec_())
 
 
