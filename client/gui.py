@@ -120,7 +120,7 @@ class AuthWindow(QWidget):
         username = self.signup_username_input.text()
         password = self.signup_password_input.text()
 
-        response = client_logic.register_user(username, password)
+        response = socket_manager.register_user(username, password)
         QMessageBox.information(self, "Success", response)
 
         if response == "Registration successful!":
@@ -135,7 +135,7 @@ class AuthWindow(QWidget):
         username = self.login_username_input.text()
         password = self.login_password_input.text()
 
-        response = client_logic.login_user(username, password)
+        response = socket_manager.login_user(username, password)
         QMessageBox.information(self, "Success", response)
 
         if response == "Login successful!":
@@ -144,7 +144,7 @@ class AuthWindow(QWidget):
     def send_message(self):
         """Handle message sending."""
         message = self.message_input.text()
-        response = client_logic.send_message_to_server(message)
+        response = socket_manager.send_message_to_server(message)
         QMessageBox.information(self, "Server Response", response)
 
 
