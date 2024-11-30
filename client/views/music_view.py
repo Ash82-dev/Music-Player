@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButt
 from PyQt5.QtCore import Qt
 
 
-def create_music_item(name, duration):
+def music_container(name, duration):
     """Create a container for a single music item."""
     container = QFrame()
     container.setFrameShape(QFrame.StyledPanel)
@@ -73,13 +73,13 @@ def music_view():
         ("Song 3", "2:50"),
     ]
     for name, duration in music_items:
-        scroll_layout.addWidget(create_music_item(name, duration))
+        scroll_layout.addWidget(music_container(name, duration))
 
     # Function to add a new music item dynamically
-    def add_music_item():
-        new_item = create_music_item("New Song", "0:00")
+    def add_music():
+        new_item = music_container("New Song", "0:00")
         scroll_layout.addWidget(new_item)
 
-    add_button.clicked.connect(add_music_item)
+    add_button.clicked.connect(add_music)
 
     return view
