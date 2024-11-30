@@ -27,8 +27,6 @@ def handle_client(client_socket):
                 username = data.get("username")
                 password = data.get("password")
                 response = login_user(username, password, client_socket)
-            elif action == "message":
-                response = handle_message(data.get("message"), client_socket)
 
             client_socket.send(response.encode())
         except Exception as e:
@@ -55,14 +53,6 @@ def login_user(username, password, client_socket):
         return "success"
     else:
         return "failure"
-
-
-def handle_message(message, client_socket):
-    """Handle sending a message to the server."""
-    username = authenticated_users.get(client_socket)
-    if not username:
-        return "You must be logged in to send a message."
-    return f"{username} says: {message}"
 
 
 def start_server():
