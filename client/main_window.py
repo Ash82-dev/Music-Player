@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QPushButton, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QPushButton, QLineEdit, QMessageBox, QDesktopWidget
 import socket_manager
 from views.signup_view import signup_view
 from views.login_view import login_view
@@ -11,8 +11,17 @@ class Window(QWidget):
         self.stacked_widget = QStackedWidget(self)
         self.setWindowTitle("Music Player")
         self.setGeometry(100, 100, 300, 250)
+        self.center_window()
 
         self.main_view()
+
+    def center_window(self):
+        """Center the main window on the screen."""
+        screen_geometry = QDesktopWidget().availableGeometry()
+        window_geometry = self.frameGeometry()
+        screen_center = screen_geometry.center()
+        window_geometry.moveCenter(screen_center)
+        self.move(window_geometry.topLeft())
 
     def main_view(self):
         """Set up the authentication views and layout."""
