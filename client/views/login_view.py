@@ -5,6 +5,7 @@ def login_view():
     """Create and return the login view."""
     view = QWidget()
     layout = QVBoxLayout(view)
+    layout.setSpacing(20)
 
     # Create widgets for login
     username_label = QLabel("Username", view)

@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 
 
 def signup_view():
     """Create and return the signup view."""
     view = QWidget()
     layout = QVBoxLayout(view)
+    layout.setSpacing(20)
 
     # Create widgets for signup
     username_label = QLabel("Username", view)
