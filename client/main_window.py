@@ -9,15 +9,13 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.stacked_widget = QStackedWidget(self)
-        self.setWindowTitle("Authentication")
+        self.setWindowTitle("Music Player")
         self.setGeometry(100, 100, 300, 250)
 
-        self.auth_view()
+        self.main_view()
 
-    def auth_view(self):
+    def main_view(self):
         """Set up the authentication views and layout."""
-        # Create the QStackedWidget to hold the views
-
         # Create the views
         signup = signup_view()
         login = login_view()
@@ -55,11 +53,16 @@ class Window(QWidget):
         username = self.stacked_widget.widget(0).findChild(QLineEdit, "signup_username_input").text()
         password = self.stacked_widget.widget(0).findChild(QLineEdit, "signup_password_input").text()
 
+        if not username or not password:
+            QMessageBox.warning(self, "Input Error", "Both username and password fields must be filled out.")
+            return
+
         response = socket_manager.register_user(username, password)
-        QMessageBox.information(self, "Success", response)
 
         if response == "Registration successful!":
             self.switch_to_message_window()
+        else:
+            QMessageBox.information(self, "Error", response)
 
     def switch_to_message_window(self):
         """Switch to the message window after successful signup."""
@@ -71,10 +74,11 @@ class Window(QWidget):
         password = self.stacked_widget.widget(1).findChild(QLineEdit, "login_password_input").text()
 
         response = socket_manager.login_user(username, password)
-        QMessageBox.information(self, "Success", response)
 
         if response == "Login successful!":
             self.switch_to_message_window()
+        else:
+            QMessageBox.information(self, "Error", response)
 
     def send_message(self):
         """Handle message sending."""
