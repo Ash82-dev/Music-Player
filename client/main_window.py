@@ -1,8 +1,14 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QPushButton, QLineEdit, QMessageBox, QDesktopWidget
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QStackedWidget, QPushButton, QLineEdit, QMessageBox, QDesktopWidget
+
 import socket_manager
-from views.signup_view import signup_view
 from views.login_view import login_view
-from views.music_view import music_view
+from views.music_container import MusicContainer
+from views.music_player_view import music_player_view
+from views.signup_view import signup_view
+
+# Global music list
+music_list = []
 
 
 class Window(QWidget):
@@ -10,7 +16,7 @@ class Window(QWidget):
         super().__init__()
         self.stacked_widget = QStackedWidget(self)
         self.setWindowTitle("Music Player")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1200, 800)
         self.center_window()
 
         self.main_view()
@@ -28,7 +34,7 @@ class Window(QWidget):
         # Create the views
         signup = signup_view()
         login = login_view()
-        music = music_view()
+        music = music_player_view()
 
         # Add views to the stacked widget
         self.stacked_widget.addWidget(signup)
@@ -47,6 +53,14 @@ class Window(QWidget):
         signup.findChild(QPushButton, "Switch to Login").clicked.connect(self.switch_to_login)
         login.findChild(QPushButton, "Login").clicked.connect(self.handle_login)
         login.findChild(QPushButton, "Switch to Sign Up").clicked.connect(self.switch_to_signup)
+
+        # Connect the "+" button
+        music.findChild(QPushButton, "AddMusicButton").clicked.connect(self.handle_add_music)
+
+        # Add some example songs for testing
+        self.add_music("Song One", "03:45")
+        self.add_music("Song Two", "04:20")
+        self.add_music("Song Three", "05:10")
 
     def switch_to_login(self):
         """Switch to the login view."""
@@ -87,3 +101,48 @@ class Window(QWidget):
             self.switch_to_music_view()
         else:
             QMessageBox.information(self, "Error", response)
+
+    def handle_add_music(self):
+        """Handle adding a new music container."""
+        global music_list
+
+        # Example new music data (replace with user input later)
+        new_song = {"name": f"New Song {len(music_list) + 1}", "duration": "00:00"}
+        self.add_music(new_song["name"], new_song["duration"])
+
+    def add_music(self, name, duration):
+        """Add a new music container to the view and global music list."""
+        global music_list
+
+        # Add to the global list
+        music_list.append({"name": name, "duration": duration})
+
+        # Add the music container to the UI
+        music_view = self.stacked_widget.widget(2)  # Music player view
+        container_area = music_view.findChild(QWidget, "MusicContainerArea")
+        container_layout = container_area.layout()
+
+        music_container = MusicContainer(name, duration)
+
+        # Connect container buttons
+        music_container.play_button.clicked.connect(self.toggle_play_pause)
+        music_container.forward_button.clicked.connect(lambda: self.handle_forward(name))
+        music_container.backward_button.clicked.connect(lambda: self.handle_backward(name))
+
+        container_layout.addWidget(music_container)
+
+    def toggle_play_pause(self):
+        """Handle play/pause toggle."""
+        button = self.sender()
+        if button.text() == "▶":
+            button.setText("⏸")
+        else:
+            button.setText("▶")
+
+    def handle_forward(self, song_name):
+        """Handle forward button click."""
+        print(f"Forward 10 seconds for: {song_name}")
+
+    def handle_backward(self, song_name):
+        """Handle backward button click."""
+        print(f"Backward 10 seconds for: {song_name}")
