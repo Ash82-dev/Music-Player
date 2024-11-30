@@ -11,7 +11,7 @@ def initialize_socket():
     global client_socket
     if client_socket is None:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect(('localhost', 12345))  # Connect to the server
+        client_socket.connect(('localhost', 12345))
 
 
 # Function to register the user
