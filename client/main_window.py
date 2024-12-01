@@ -1,7 +1,8 @@
+import pygame
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QPushButton, QLineEdit, QMessageBox, QDesktopWidget
 
-import socket_manager
+from server import socket_manager
 from views.login_view import login_view
 from views.music_container import MusicContainer
 from views.music_player_view import music_player_view
@@ -58,9 +59,8 @@ class Window(QWidget):
         music.findChild(QPushButton, "AddMusicButton").clicked.connect(self.handle_add_music)
 
         # Add some example songs for testing
-        self.add_music("Song One", "03:45")
-        self.add_music("Song Two", "04:20")
-        self.add_music("Song Three", "05:10")
+        self.add_music("Alternative Outro", "03:45")
+        self.add_music("A Miserable Life", "03:45")
 
     def switch_to_login(self):
         """Switch to the login view."""
@@ -125,19 +125,37 @@ class Window(QWidget):
         music_container = MusicContainer(name, duration)
 
         # Connect container buttons
-        music_container.play_button.clicked.connect(self.toggle_play_pause)
+        music_container.play_button.clicked.connect(lambda: self.toggle_play_pause(name))
         music_container.forward_button.clicked.connect(lambda: self.handle_forward(name))
         music_container.backward_button.clicked.connect(lambda: self.handle_backward(name))
 
         container_layout.addWidget(music_container)
 
-    def toggle_play_pause(self):
+    def toggle_play_pause(self, song_name):
         """Handle play/pause toggle."""
         button = self.sender()
+
         if button.text() == "▶":
-            button.setText("⏸")
+            # If the button shows "▶", play the song
+            if not song_name.strip():
+                QMessageBox.warning(self, "Error", "Please enter a song name!")
+                return
+
+            # Send play request to the server
+            response = socket_manager.play_music(song_name)
+
+            if response == "Playing music":
+                button.setText("⏸")  # Update button text to "Pause"
+            else:
+                QMessageBox.warning(self, "Error", response)
         else:
-            button.setText("▶")
+            # If the button shows "⏸", pause the music
+            try:
+                # Pause music playback
+                pygame.mixer.music.pause()
+                button.setText("▶")  # Update button text to "Play"
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to pause music: {e}")
 
     def handle_forward(self, song_name):
         """Handle forward button click."""
