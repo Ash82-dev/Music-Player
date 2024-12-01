@@ -82,3 +82,22 @@ def play_music(song_name):
 
     return response
 
+
+def pause_music():
+    """Send a pause music request to the server."""
+    global client_socket
+
+    if not client_socket:
+        return "Not connected to the server"
+
+    pause_data = {
+        'action': 'pause_music'
+    }
+
+    try:
+        client_socket.send(json.dumps(pause_data).encode('utf-8'))
+        response = client_socket.recv(1024).decode('utf-8')
+        return response
+    except Exception as e:
+        print(f"Error sending pause music request: {e}")
+        return "Error pausing music"

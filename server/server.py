@@ -5,6 +5,9 @@ import json
 
 import pygame
 
+# Initialize pygame and play the music
+pygame.mixer.init()
+
 # A simple in-memory user database (username:password)
 user_db = {}
 
@@ -33,6 +36,8 @@ def handle_client(client_socket):
             elif action == "play_music":
                 song_name = data.get("song_name")
                 response = play_music(song_name)
+            elif action == "pause_music":
+                response = pause_music()
 
             client_socket.send(response.encode())
         except Exception as e:
@@ -81,8 +86,6 @@ def play_music(song_name):
             print(f"Song not found: {file_path}")
             return "Song not found"
 
-        # Initialize pygame and play the music
-        pygame.mixer.init()
         pygame.mixer.music.load(file_path)
         pygame.mixer.music.play()
 
@@ -91,6 +94,16 @@ def play_music(song_name):
     except Exception as e:
         print(f"Error playing music: {e}")
         return "Error playing music"
+
+
+def pause_music():
+    """Pause the currently playing music."""
+    try:
+        pygame.mixer.music.pause()
+        return "Music paused"
+    except Exception as e:
+        print(f"Error pausing music: {e}")
+        return "Error pausing music"
 
 
 def start_server():

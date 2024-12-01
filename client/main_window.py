@@ -149,13 +149,13 @@ class Window(QWidget):
             else:
                 QMessageBox.warning(self, "Error", response)
         else:
-            # If the button shows "⏸", pause the music
-            try:
-                # Pause music playback
-                pygame.mixer.music.pause()
+            # Pause the music
+            response = socket_manager.pause_music()
+
+            if response == "Music paused":
                 button.setText("▶")  # Update button text to "Play"
-            except Exception as e:
-                QMessageBox.warning(self, "Error", f"Failed to pause music: {e}")
+            else:
+                QMessageBox.warning(self, "Error", response)
 
     def handle_forward(self, song_name):
         """Handle forward button click."""
