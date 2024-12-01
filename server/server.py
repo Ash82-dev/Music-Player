@@ -1,6 +1,9 @@
+import os
 import socket
 import threading
 import json
+
+import pygame
 
 # A simple in-memory user database (username:password)
 user_db = {}
@@ -27,6 +30,9 @@ def handle_client(client_socket):
                 username = data.get("username")
                 password = data.get("password")
                 response = login_user(username, password, client_socket)
+            elif action == "play_music":
+                song_name = data.get("song_name")
+                response = play_music(song_name)
 
             client_socket.send(response.encode())
         except Exception as e:
@@ -53,6 +59,38 @@ def login_user(username, password, client_socket):
         return "success"
     else:
         return "failure"
+
+
+def play_music(song_name):
+    """Play music from the data/music folder with .mp3 extension using pygame."""
+    try:
+        # Get the absolute path of the directory containing server.py
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Construct the full path to the data/music folder
+        music_folder = os.path.join(base_dir, "..", "data", "music")
+
+        # Ensure the file has the correct extension
+        if not song_name.endswith(".mp3"):
+            song_name += ".mp3"
+
+        # Construct the full file path
+        file_path = os.path.join(music_folder, song_name)
+
+        if not os.path.exists(file_path):
+            print(f"Song not found: {file_path}")
+            return "Song not found"
+
+        # Initialize pygame and play the music
+        pygame.mixer.init()
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.play()
+
+        print(f"Playing song: {song_name}")
+        return "Playing music"
+    except Exception as e:
+        print(f"Error playing music: {e}")
+        return "Error playing music"
 
 
 def start_server():
