@@ -9,7 +9,9 @@ import pygame
 pygame.mixer.init()
 
 # A simple in-memory user database (username:password)
-user_db = {}
+user_db = {
+    "a": "1"
+}
 
 # This dictionary will store the authenticated users' sockets
 authenticated_users = {}
