@@ -30,11 +30,18 @@ def register_user(username, password):
     client_socket.send(json.dumps(user_data).encode('utf-8'))
     response = client_socket.recv(1024).decode('utf-8')
 
+    # Decode the JSON response
+    response_data = json.loads(response)
+
+    # Extract the message and data
+    status = response_data.get("status")
+    data = response_data.get("data", [])
+
     # Registration is successful if no errors are returned
-    if response == "Registration successful!":
+    if status == "Registration successful!":
         is_authenticated = True
 
-    return response
+    return status, data
 
 
 # Function to login the user
@@ -55,12 +62,19 @@ def login_user(username, password):
     client_socket.send(json.dumps(login_data).encode('utf-8'))
     response = client_socket.recv(1024).decode('utf-8')
 
-    if response == "success":
+    # Decode the JSON response
+    response_data = json.loads(response)
+
+    # Extract the message and data
+    status = response_data.get("status")
+    data = response_data.get("data", [])
+
+    if status == "success":
         is_authenticated = True
+        return "Login successful!", data
     else:
         is_authenticated = False
-
-    return "Login successful!" if is_authenticated else "Login failed!"
+        return "Login failed!", data
 
 
 # Function to request the server to play a song
@@ -80,7 +94,13 @@ def play_music(song_name):
     client_socket.send(json.dumps(music_request).encode('utf-8'))
     response = client_socket.recv(1024).decode('utf-8')
 
-    return response
+    # Decode the JSON response
+    response_data = json.loads(response)
+
+    # Extract the message and data
+    status = response_data.get("status")
+
+    return status
 
 
 def pause_music():
@@ -97,7 +117,14 @@ def pause_music():
     try:
         client_socket.send(json.dumps(pause_data).encode('utf-8'))
         response = client_socket.recv(1024).decode('utf-8')
-        return response
+
+        # Decode the JSON response
+        response_data = json.loads(response)
+
+        # Extract the message and data
+        status = response_data.get("status")
+
+        return status
     except Exception as e:
         print(f"Error sending pause music request: {e}")
         return "Error pausing music"

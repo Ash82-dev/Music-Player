@@ -16,6 +16,10 @@ user_db = {
 # This dictionary will store the authenticated users' sockets
 authenticated_users = {}
 
+# Get the absolute path of the directory containing server.py
+base_dir = os.path.dirname(os.path.abspath(__file__))
+music_folder = os.path.join(base_dir, "..", "data", "music")
+
 
 def handle_client(client_socket):
     while True:
@@ -41,7 +45,7 @@ def handle_client(client_socket):
             elif action == "pause_music":
                 response = pause_music()
 
-            client_socket.send(response.encode())
+            client_socket.send(json.dumps(response).encode())
         except Exception as e:
             print(f"Error: {e}")
             break
@@ -49,34 +53,52 @@ def handle_client(client_socket):
     client_socket.close()
 
 
+def get_music_list():
+    """Return a list of available .mp4 music files."""
+    music_files = []
+    try:
+        for filename in os.listdir(music_folder):
+            if filename.endswith(".mp3"):
+                music_files.append(filename)
+    except Exception as e:
+        print(f"Error reading music files: {e}")
+    return music_files
+
+
 def register_user(username, password, client_socket):
     """Handle user registration."""
     if username in user_db:
-        return "Username already taken"
+        return {
+            "status": "Username already taken",
+            "data": []  # You can add an empty array or any relevant data here
+        }
 
     user_db[username] = password
     authenticated_users[client_socket] = username
-    return "Registration successful!"
+    return {
+            "status": "Registration successful!",
+            "data": get_music_list()
+        }
 
 
 def login_user(username, password, client_socket):
     """Handle user login."""
     if username in user_db and user_db[username] == password:
         authenticated_users[client_socket] = username
-        return "success"
+        return {
+                "status": "success",
+                "data": get_music_list()
+            }
     else:
-        return "failure"
+        return {
+                "status": "failure",
+                "data": []  # You can add an empty array or any relevant data here
+        }
 
 
 def play_music(song_name):
     """Play music from the data/music folder with .mp3 extension using pygame."""
     try:
-        # Get the absolute path of the directory containing server.py
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-
-        # Construct the full path to the data/music folder
-        music_folder = os.path.join(base_dir, "..", "data", "music")
-
         # Ensure the file has the correct extension
         if not song_name.endswith(".mp3"):
             song_name += ".mp3"
@@ -86,26 +108,26 @@ def play_music(song_name):
 
         if not os.path.exists(file_path):
             print(f"Song not found: {file_path}")
-            return "Song not found"
+            return {"status": "Song not found"}
 
         pygame.mixer.music.load(file_path)
         pygame.mixer.music.play()
 
         print(f"Playing song: {song_name}")
-        return "Playing music"
+        return {"status": "Playing music"}
     except Exception as e:
         print(f"Error playing music: {e}")
-        return "Error playing music"
+        return {"status": "Error playing music"}
 
 
 def pause_music():
     """Pause the currently playing music."""
     try:
         pygame.mixer.music.pause()
-        return "Music paused"
+        return {"status": "Music paused"}
     except Exception as e:
         print(f"Error pausing music: {e}")
-        return "Error pausing music"
+        return {"status": "Error pausing music"}
 
 
 def start_server():

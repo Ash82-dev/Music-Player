@@ -59,8 +59,8 @@ class Window(QWidget):
         music.findChild(QPushButton, "AddMusicButton").clicked.connect(self.handle_add_music)
 
         # Add some example songs for testing
-        self.add_music("Alternative Outro", "03:45")
-        self.add_music("A Miserable Life", "03:45")
+        # self.add_music("Alternative Outro", "03:45")
+        # self.add_music("A Miserable Life", "03:45")
 
     def switch_to_login(self):
         """Switch to the login view."""
@@ -83,10 +83,12 @@ class Window(QWidget):
             QMessageBox.warning(self, "Input Error", "Both username and password fields must be filled out.")
             return
 
-        response = socket_manager.register_user(username, password)
+        response, playlist = socket_manager.register_user(username, password)
 
         if response == "Registration successful!":
             self.switch_to_music_view()
+            for music in playlist:
+                self.add_music(music, "05:00")
         else:
             QMessageBox.information(self, "Error", response)
 
@@ -95,10 +97,12 @@ class Window(QWidget):
         username = self.stacked_widget.widget(1).findChild(QLineEdit, "login_username_input").text()
         password = self.stacked_widget.widget(1).findChild(QLineEdit, "login_password_input").text()
 
-        response = socket_manager.login_user(username, password)
+        response, playlist = socket_manager.login_user(username, password)
 
         if response == "Login successful!":
             self.switch_to_music_view()
+            for music in playlist:
+                self.add_music(music, "05:00")
         else:
             QMessageBox.information(self, "Error", response)
 
