@@ -145,6 +145,9 @@ class Window(QWidget):
             response = socket_manager.play_music(song_name)
 
             if response == "Playing music":
+                # Reset all other play/pause buttons to "Play"
+                self.reset_play_buttons()
+
                 button.setText("⏸")  # Update button text to "Pause"
             else:
                 QMessageBox.warning(self, "Error", response)
@@ -156,6 +159,13 @@ class Window(QWidget):
                 button.setText("▶")  # Update button text to "Play"
             else:
                 QMessageBox.warning(self, "Error", response)
+
+    def reset_play_buttons(self):
+        """Reset all other play/pause buttons to '▶'."""
+        # Iterate over all the buttons and reset them to "Play"
+        for widget in self.stacked_widget.widget(2).findChildren(QPushButton):
+            if widget.text() == "⏸":
+                widget.setText("▶")
 
     def handle_forward(self, song_name):
         """Handle forward button click."""
