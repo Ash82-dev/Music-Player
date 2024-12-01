@@ -1,21 +1,61 @@
 import socket
 import json
+import threading
+from queue import Queue
 
 # Global variable to track whether the user is authenticated
 is_authenticated = False
 client_socket = None
+message_queue = Queue()
 
 
-# Function to initialize the socket connection
 def initialize_socket():
+    """Initialize the socket connection if not already connected."""
     global client_socket
     if client_socket is None:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('localhost', 12345))
 
 
-# Function to register the user
+def listen_to_server():
+    """Continuously listen for messages from the server."""
+    global client_socket
+
+    try:
+        while True:
+            if client_socket:
+                message = client_socket.recv(1024).decode('utf-8')
+                if message:
+                    response = json.loads(message)
+
+                    action = response.get('action')
+                    if action == "broadcast":
+                        print(1)
+                    else:
+                        message_queue.put(message)  # Add message to the queue
+                        # handle_server_message(message)
+    except Exception as e:
+        print(f"[ERROR] Disconnected from server: {e}")
+        client_socket = None
+
+
+def handle_server_message(message):
+    """Process messages received from the server."""
+    try:
+        # Decode the message (assuming JSON format)
+        data = json.loads(message)
+        action = data.get("action")
+
+        if action == "broadcast":
+            print(f"[SERVER BROADCAST]: {data.get('message')}")
+        else:
+            print(f"[UNKNOWN SERVER MESSAGE]: {data}")
+    except Exception as e:
+        print(f"[ERROR] Failed to handle server message: {e}")
+
+
 def register_user(username, password):
+    """Register the user with the server."""
     global is_authenticated, client_socket
 
     initialize_socket()
@@ -26,48 +66,37 @@ def register_user(username, password):
         'password': password
     }
 
-    # Send data to the server
     client_socket.send(json.dumps(user_data).encode('utf-8'))
-    response = client_socket.recv(1024).decode('utf-8')
 
-    # Decode the JSON response
-    response_data = json.loads(response)
+    # Wait for a response from the queue
+    response = json.loads(message_queue.get())  # Blocks until a message is available
+    status = response.get("status")
+    data = response.get("data", [])
 
-    # Extract the message and data
-    status = response_data.get("status")
-    data = response_data.get("data", [])
-
-    # Registration is successful if no errors are returned
     if status == "Registration successful!":
         is_authenticated = True
 
     return status, data
 
 
-# Function to login the user
 def login_user(username, password):
+    """Login the user with the server."""
     global is_authenticated, client_socket
 
-    # Ensure the socket is initialized
     initialize_socket()
 
-    # Prepare the login data to be sent to the server
     login_data = {
         'action': 'login',
         'username': username,
         'password': password
     }
 
-    # Send login data to the server
     client_socket.send(json.dumps(login_data).encode('utf-8'))
-    response = client_socket.recv(1024).decode('utf-8')
 
-    # Decode the JSON response
-    response_data = json.loads(response)
-
-    # Extract the message and data
-    status = response_data.get("status")
-    data = response_data.get("data", [])
+    # Wait for a response from the queue
+    response = json.loads(message_queue.get())  # Blocks until a message is available
+    status = response.get("status")
+    data = response.get("data", [])
 
     if status == "success":
         is_authenticated = True
@@ -77,27 +106,21 @@ def login_user(username, password):
         return "Login failed!", data
 
 
-# Function to request the server to play a song
 def play_music(song_name):
+    """Send a play music request to the server."""
     global client_socket
 
-    # Ensure the socket is initialized
     initialize_socket()
 
-    # Prepare the request to play music
     music_request = {
         'action': 'play_music',
         'song_name': song_name
     }
 
-    # Send the request to the server
     client_socket.send(json.dumps(music_request).encode('utf-8'))
     response = client_socket.recv(1024).decode('utf-8')
 
-    # Decode the JSON response
     response_data = json.loads(response)
-
-    # Extract the message and data
     status = response_data.get("status")
 
     return status
@@ -118,10 +141,7 @@ def pause_music():
         client_socket.send(json.dumps(pause_data).encode('utf-8'))
         response = client_socket.recv(1024).decode('utf-8')
 
-        # Decode the JSON response
         response_data = json.loads(response)
-
-        # Extract the message and data
         status = response_data.get("status")
 
         return status

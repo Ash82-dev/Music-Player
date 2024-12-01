@@ -20,8 +20,12 @@ authenticated_users = {}
 base_dir = os.path.dirname(os.path.abspath(__file__))
 music_folder = os.path.join(base_dir, "..", "data", "music")
 
+clients = []
+
 
 def handle_client(client_socket):
+    global clients
+
     while True:
         try:
             message = client_socket.recv(1024).decode()
@@ -42,6 +46,7 @@ def handle_client(client_socket):
             elif action == "play_music":
                 song_name = data.get("song_name")
                 response = play_music(song_name)
+                broadcast_message(f"Playing {song_name}")
             elif action == "pause_music":
                 response = pause_music()
 
@@ -50,7 +55,20 @@ def handle_client(client_socket):
             print(f"Error: {e}")
             break
 
+    print(f"client [DISCONNECTED]")
+    clients.remove(client_socket)
     client_socket.close()
+
+
+def broadcast_message(message):
+    """Send a message to all connected clients."""
+    global clients
+
+    for client in clients:
+        try:
+            client.send(json.dumps({"action": "broadcast", "message": message}).encode('utf-8'))
+        except Exception:
+            clients.remove(client)
 
 
 def get_music_list():
@@ -139,6 +157,8 @@ def start_server():
     while True:
         client_socket, addr = server.accept()
         print(f"Connected to {addr}")
+
+        clients.append(client_socket)
         threading.Thread(target=handle_client, args=(client_socket,)).start()
 
 
