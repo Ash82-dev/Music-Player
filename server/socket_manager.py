@@ -61,3 +61,24 @@ def login_user(username, password):
         is_authenticated = False
 
     return "Login successful!" if is_authenticated else "Login failed!"
+
+
+# Function to request the server to play a song
+def play_music(song_name):
+    global client_socket
+
+    # Ensure the socket is initialized
+    initialize_socket()
+
+    # Prepare the request to play music
+    music_request = {
+        'action': 'play_music',
+        'song_name': song_name
+    }
+
+    # Send the request to the server
+    client_socket.send(json.dumps(music_request).encode('utf-8'))
+    response = client_socket.recv(1024).decode('utf-8')
+
+    return response
+
