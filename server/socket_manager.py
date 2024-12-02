@@ -1,6 +1,5 @@
 import socket
 import json
-import threading
 from queue import Queue
 
 # Global variable to track whether the user is authenticated

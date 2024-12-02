@@ -1,7 +1,5 @@
-import pygame
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QPushButton, QLineEdit, QMessageBox, QDesktopWidget
-
 from server import socket_manager
 from views.login_view import login_view
 from views.music_container import MusicContainer
@@ -57,10 +55,6 @@ class Window(QWidget):
 
         # Connect the "+" button
         music.findChild(QPushButton, "AddMusicButton").clicked.connect(self.handle_add_music)
-
-        # Add some example songs for testing
-        # self.add_music("Alternative Outro", "03:45")
-        # self.add_music("A Miserable Life", "03:45")
 
     def switch_to_login(self):
         """Switch to the login view."""
