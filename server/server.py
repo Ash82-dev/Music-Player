@@ -2,7 +2,7 @@ import os
 import socket
 import threading
 import json
-
+from mutagen.mp3 import MP3
 import pygame
 
 # Initialize pygame and play the music
@@ -78,6 +78,14 @@ def get_music_list():
         for filename in os.listdir(music_folder):
             if filename.endswith(".mp3"):
                 music_files.append(filename)
+                file_path = os.path.join(music_folder, filename)
+                try:
+                    audio = MP3(file_path)
+                    duration = int(audio.info.length)
+                    print(duration // 60)
+                    print(duration % 60)
+                except Exception as e:
+                    print(f"Error reading metadata for {filename}: {e}")
     except Exception as e:
         print(f"Error reading music files: {e}")
     return music_files

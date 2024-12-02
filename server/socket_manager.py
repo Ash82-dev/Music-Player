@@ -30,7 +30,7 @@ def listen_to_server():
 
                     action = response.get('action')
                     if action == "broadcast":
-                        print(1)
+                        print()
                     else:
                         message_queue.put(message)  # Add message to the queue
                         # handle_server_message(message)
@@ -118,10 +118,10 @@ def play_music(song_name):
     }
 
     client_socket.send(json.dumps(music_request).encode('utf-8'))
-    response = client_socket.recv(1024).decode('utf-8')
 
-    response_data = json.loads(response)
-    status = response_data.get("status")
+    # Wait for a response from the queue
+    response = json.loads(message_queue.get())  # Blocks until a message is available
+    status = response.get("status")
 
     return status
 
@@ -139,10 +139,10 @@ def pause_music():
 
     try:
         client_socket.send(json.dumps(pause_data).encode('utf-8'))
-        response = client_socket.recv(1024).decode('utf-8')
 
-        response_data = json.loads(response)
-        status = response_data.get("status")
+        # Wait for a response from the queue
+        response = json.loads(message_queue.get())  # Blocks until a message is available
+        status = response.get("status")
 
         return status
     except Exception as e:
