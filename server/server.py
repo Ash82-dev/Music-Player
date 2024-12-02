@@ -22,6 +22,10 @@ music_folder = os.path.join(base_dir, "..", "data", "music")
 
 clients = []
 
+music_files = []
+
+current_music = ""
+
 
 def handle_client(client_socket):
     global clients
@@ -73,8 +77,6 @@ def broadcast_message(message):
 
 def get_music_list():
     """Return a list of available .mp4 music files."""
-    music_files = []
-
     try:
         for filename in os.listdir(music_folder):
             if filename.endswith(".mp3"):
@@ -83,7 +85,8 @@ def get_music_list():
                     audio = MP3(file_path)
                     duration = int(audio.info.length)
                     formatted_duration = format_duration(duration)
-                    music_files.append({"filename": filename, "duration": formatted_duration})
+                    is_playing = current_music == filename
+                    music_files.append({"filename": filename, "duration": formatted_duration, "is_playing": is_playing})
                 except Exception as e:
                     print(f"Error reading metadata for {filename}: {e}")
     except Exception as e:
@@ -110,7 +113,7 @@ def register_user(username, password, client_socket):
     authenticated_users[client_socket] = username
     return {
             "status": "Registration successful!",
-            "data": get_music_list()
+            "data": music_files
         }
 
 
@@ -120,7 +123,7 @@ def login_user(username, password, client_socket):
         authenticated_users[client_socket] = username
         return {
                 "status": "success",
-                "data": get_music_list()
+                "data": music_files
             }
     else:
         return {
@@ -131,6 +134,12 @@ def login_user(username, password, client_socket):
 
 def play_music(song_name):
     """Play music from the data/music folder with .mp3 extension using pygame."""
+    for music in music_files:
+        if music["filename"] == song_name:
+            music["is_playing"] = True
+        else:
+            music["is_playing"] = False
+
     try:
         # Ensure the file has the correct extension
         if not song_name.endswith(".mp3"):
@@ -153,6 +162,7 @@ def play_music(song_name):
         return {"status": "Error playing music"}
 
 
+# TODO: turn is_playing to false when the music is paused
 def pause_music():
     """Pause the currently playing music."""
     try:
@@ -164,9 +174,11 @@ def pause_music():
 
 
 def start_server():
+    global music_files
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('localhost', 12345))
     server.listen(5)
+    music_files = get_music_list()
     print("Server running...")
 
     while True:
