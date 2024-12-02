@@ -50,7 +50,7 @@ def handle_client(client_socket):
             elif action == "play_music":
                 song_name = data.get("song_name")
                 response = play_music(song_name)
-                broadcast_message(f"Playing {song_name}")
+                broadcast_message()
             elif action == "pause_music":
                 response = pause_music()
 
@@ -64,13 +64,13 @@ def handle_client(client_socket):
     client_socket.close()
 
 
-def broadcast_message(message):
+def broadcast_message():
     """Send a message to all connected clients."""
     global clients
 
     for client in clients:
         try:
-            client.send(json.dumps({"action": "broadcast", "message": message}).encode('utf-8'))
+            client.send(json.dumps({"action": "broadcast", "music_list": music_files}).encode('utf-8'))
         except Exception:
             clients.remove(client)
 

@@ -29,28 +29,12 @@ def listen_to_server():
 
                     action = response.get('action')
                     if action == "broadcast":
-                        print()
+                        print(response["music_list"])
                     else:
-                        message_queue.put(message)  # Add message to the queue
-                        # handle_server_message(message)
+                        message_queue.put(message)
     except Exception as e:
         print(f"[ERROR] Disconnected from server: {e}")
         client_socket = None
-
-
-def handle_server_message(message):
-    """Process messages received from the server."""
-    try:
-        # Decode the message (assuming JSON format)
-        data = json.loads(message)
-        action = data.get("action")
-
-        if action == "broadcast":
-            print(f"[SERVER BROADCAST]: {data.get('message')}")
-        else:
-            print(f"[UNKNOWN SERVER MESSAGE]: {data}")
-    except Exception as e:
-        print(f"[ERROR] Failed to handle server message: {e}")
 
 
 def register_user(username, password):
@@ -147,3 +131,7 @@ def pause_music():
     except Exception as e:
         print(f"Error sending pause music request: {e}")
         return "Error pausing music"
+
+
+def update_music_list():
+    print(1)
