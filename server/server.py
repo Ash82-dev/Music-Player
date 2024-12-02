@@ -8,12 +8,10 @@ import pygame
 # Initialize pygame and play the music
 pygame.mixer.init()
 
-# A simple in-memory user database (username:password)
 user_db = {
     "a": "1"
 }
 
-# This dictionary will store the authenticated users' sockets
 authenticated_users = {}
 
 # Get the absolute path of the directory containing server.py
@@ -36,7 +34,7 @@ def handle_client(client_socket):
             if not message:
                 break
 
-            data = json.loads(message)  # Parse the incoming message
+            data = json.loads(message)
             action = data.get("action")
 
             if action == "register":
@@ -53,6 +51,7 @@ def handle_client(client_socket):
                 broadcast_message()
             elif action == "pause_music":
                 response = pause_music()
+                broadcast_message()
 
             client_socket.send(json.dumps(response).encode())
         except Exception as e:
@@ -106,7 +105,7 @@ def register_user(username, password, client_socket):
     if username in user_db:
         return {
             "status": "Username already taken",
-            "data": []  # You can add an empty array or any relevant data here
+            "data": []
         }
 
     user_db[username] = password
@@ -128,24 +127,25 @@ def login_user(username, password, client_socket):
     else:
         return {
                 "status": "failure",
-                "data": []  # You can add an empty array or any relevant data here
+                "data": []
         }
 
 
 def play_music(song_name):
     """Play music from the data/music folder with .mp3 extension using pygame."""
+    global current_music
+    current_music = song_name
+
     for music in music_files:
-        if music["filename"] == song_name:
+        if music["filename"] == current_music:
             music["is_playing"] = True
         else:
             music["is_playing"] = False
 
     try:
-        # Ensure the file has the correct extension
         if not song_name.endswith(".mp3"):
             song_name += ".mp3"
 
-        # Construct the full file path
         file_path = os.path.join(music_folder, song_name)
 
         if not os.path.exists(file_path):
@@ -162,9 +162,14 @@ def play_music(song_name):
         return {"status": "Error playing music"}
 
 
-# TODO: turn is_playing to false when the music is paused
 def pause_music():
     """Pause the currently playing music."""
+    for music in music_files:
+        if music["filename"] == current_music:
+            music["is_playing"] = True
+        else:
+            music["is_playing"] = False
+
     try:
         pygame.mixer.music.pause()
         return {"status": "Music paused"}

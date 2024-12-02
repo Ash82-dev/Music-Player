@@ -2,7 +2,6 @@ import socket
 import json
 from queue import Queue
 
-# Global variable to track whether the user is authenticated
 is_authenticated = False
 client_socket = None
 message_queue = Queue()
@@ -51,8 +50,7 @@ def register_user(username, password):
 
     client_socket.send(json.dumps(user_data).encode('utf-8'))
 
-    # Wait for a response from the queue
-    response = json.loads(message_queue.get())  # Blocks until a message is available
+    response = json.loads(message_queue.get())
     status = response.get("status")
     data = response.get("data", [])
 
@@ -76,8 +74,7 @@ def login_user(username, password):
 
     client_socket.send(json.dumps(login_data).encode('utf-8'))
 
-    # Wait for a response from the queue
-    response = json.loads(message_queue.get())  # Blocks until a message is available
+    response = json.loads(message_queue.get())
     status = response.get("status")
     data = response.get("data", [])
 
@@ -102,8 +99,7 @@ def play_music(song_name):
 
     client_socket.send(json.dumps(music_request).encode('utf-8'))
 
-    # Wait for a response from the queue
-    response = json.loads(message_queue.get())  # Blocks until a message is available
+    response = json.loads(message_queue.get())
     status = response.get("status")
 
     return status
@@ -123,15 +119,10 @@ def pause_music():
     try:
         client_socket.send(json.dumps(pause_data).encode('utf-8'))
 
-        # Wait for a response from the queue
-        response = json.loads(message_queue.get())  # Blocks until a message is available
+        response = json.loads(message_queue.get())
         status = response.get("status")
 
         return status
     except Exception as e:
         print(f"Error sending pause music request: {e}")
         return "Error pausing music"
-
-
-def update_music_list():
-    print(1)
