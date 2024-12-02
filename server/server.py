@@ -74,21 +74,28 @@ def broadcast_message(message):
 def get_music_list():
     """Return a list of available .mp4 music files."""
     music_files = []
+
     try:
         for filename in os.listdir(music_folder):
             if filename.endswith(".mp3"):
-                music_files.append(filename)
                 file_path = os.path.join(music_folder, filename)
                 try:
                     audio = MP3(file_path)
                     duration = int(audio.info.length)
-                    print(duration // 60)
-                    print(duration % 60)
+                    formatted_duration = format_duration(duration)
+                    music_files.append({"filename": filename, "duration": formatted_duration})
                 except Exception as e:
                     print(f"Error reading metadata for {filename}: {e}")
     except Exception as e:
         print(f"Error reading music files: {e}")
     return music_files
+
+
+def format_duration(seconds):
+    """Convert duration in seconds to minutes:seconds format."""
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f"{int(minutes)}:{int(seconds):02}"
 
 
 def register_user(username, password, client_socket):

@@ -88,7 +88,7 @@ class Window(QWidget):
         if response == "Registration successful!":
             self.switch_to_music_view()
             for music in playlist:
-                self.add_music(music, "05:00")
+                self.add_music(music["filename"], music["duration"])
         else:
             QMessageBox.information(self, "Error", response)
 
@@ -102,7 +102,7 @@ class Window(QWidget):
         if response == "Login successful!":
             self.switch_to_music_view()
             for music in playlist:
-                self.add_music(music, "05:00")
+                self.add_music(music["filename"], music["duration"])
         else:
             QMessageBox.information(self, "Error", response)
 
