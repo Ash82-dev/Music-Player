@@ -40,9 +40,9 @@ class MusicContainer(QFrame):
         self.backward_button.setObjectName("BackwardButton")
 
         # Add buttons to the controls layout
+        controls_layout.addWidget(self.backward_button)
         controls_layout.addWidget(self.play_button)
         controls_layout.addWidget(self.forward_button)
-        controls_layout.addWidget(self.backward_button)
 
         # Add details and control layouts to the main layout
         layout.addLayout(details_layout)
