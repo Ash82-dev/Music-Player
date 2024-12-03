@@ -5,6 +5,7 @@ from queue import Queue
 is_authenticated = False
 client_socket = None
 message_queue = Queue()
+callback_function = None
 
 
 def initialize_socket():
@@ -13,6 +14,12 @@ def initialize_socket():
     if client_socket is None:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('localhost', 12345))
+
+
+def register_callback(callback):
+    """Register a callback function to handle responses."""
+    global callback_function
+    callback_function = callback
 
 
 def listen_to_server():
@@ -28,7 +35,8 @@ def listen_to_server():
 
                     action = response.get('action')
                     if action == "broadcast":
-                        print(response["music_list"])
+                        if callback_function:
+                            callback_function(response["music_list"])
                     else:
                         message_queue.put(message)
     except Exception as e:
