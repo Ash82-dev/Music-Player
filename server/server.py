@@ -166,8 +166,6 @@ def pause_music():
     """Pause the currently playing music."""
     for music in music_files:
         if music["filename"] == current_music:
-            music["is_playing"] = True
-        else:
             music["is_playing"] = False
 
     try:
