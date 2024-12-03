@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QPushButton, QLineEdit, QMessageBox, QDesktopWidget
 from server import socket_manager
+from server.socket_manager import register_callback, initialize_socket
 from views.login_view import login_view
 from views.music_container import MusicContainer
 from views.music_player_view import music_player_view
@@ -19,6 +20,23 @@ class Window(QWidget):
         self.center_window()
 
         self.main_view()
+
+        # Register the callback
+        initialize_socket()
+        register_callback(self.handle_broadcast)
+
+    def handle_broadcast(self, music_list):
+        """Handle the broadcast response from the server."""
+        music_view = self.stacked_widget.widget(2)
+        container_area = music_view.findChild(QWidget, "MusicContainerArea")
+
+        for music_container in container_area.findChildren(MusicContainer):
+            for music in music_list:
+                if music_container.name_label.text() == music["filename"]:
+                    if music["is_playing"]:
+                        music_container.play_button.setText("⏸")
+                    else:
+                        music_container.play_button.setText("▶")
 
     def center_window(self):
         """Center the main window on the screen."""
