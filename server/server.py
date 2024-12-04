@@ -59,6 +59,10 @@ def handle_client(client_socket):
             elif action == "backward_music":
                 song_name = data.get("song_name")
                 response = backward_music(song_name)
+            elif action == "remove_music":
+                song_name = data.get("song_name")
+                response = remove_music(song_name)
+                broadcast_message()
 
             client_socket.send(json.dumps(response).encode())
         except Exception as e:
@@ -206,6 +210,17 @@ def backward_music(song_name):
     new_pos = max(0, current_pos - 10)
     player.set_time(int(new_pos * 1000))
     return {"status": "success"}
+
+
+def remove_music(song_name):
+    """remove music from music_list"""
+    global music_files
+
+    for music in music_files:
+        if music["filename"] == song_name:
+            music_files.remove(music)
+            return {"status": "success"}
+    return {"status": "failed"}
 
 
 def start_server():

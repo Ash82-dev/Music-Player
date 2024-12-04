@@ -174,3 +174,23 @@ def backward_music(song_name):
     except Exception as e:
         print(f"Error sending backward music request: {e}")
         return "Error backward music"
+
+
+def remove_music(song_name):
+    """send a remove music request to the server"""
+    global client_socket
+
+    remove_data = {
+        'action': 'remove_music',
+        "song_name": song_name
+    }
+
+    try:
+        client_socket.send(json.dumps(remove_data).encode('utf-8'))
+        response = json.loads(message_queue.get())
+        status = response.get("status")
+
+        return status
+    except Exception as e:
+        print(f"Error sending remove music request: {e}")
+        return "Error remove music"
