@@ -3,11 +3,8 @@ import socket
 import threading
 import json
 from mutagen.mp3 import MP3
-import pygame
 import vlc
 
-# Initialize pygame and play the music
-pygame.mixer.init()
 
 # VLC player instance
 player = vlc.MediaPlayer()
