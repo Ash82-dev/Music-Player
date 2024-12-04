@@ -130,8 +130,9 @@ class Window(QWidget):
         login.findChild(QPushButton, "Login").clicked.connect(self.handle_login)
         login.findChild(QPushButton, "Switch to Sign Up").clicked.connect(self.switch_to_signup)
 
-        # Connect the "+" button
+        # Connect the "+", sort button
         music.findChild(QPushButton, "AddMusicButton").clicked.connect(handle_add_music)
+        music.findChild(QPushButton, "SortButton").clicked.connect(self.sort_music)
 
     def switch_to_login(self):
         """Switch to the login view."""
@@ -180,6 +181,9 @@ class Window(QWidget):
             self.update_buttons(music_list)
         else:
             QMessageBox.information(self, "Error", response)
+
+    def sort_music(self):
+        pass
 
     def add_music(self, name, duration):
         """Add a new music container to the view and global music list."""

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QScrollArea
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QScrollArea, QHBoxLayout
 from PyQt5.QtCore import Qt
 
 
@@ -27,24 +27,66 @@ def music_player_view():
     # Add the scroll area to the main layout
     layout.addWidget(scroll_area)
 
-    # "+" Button in the bottom-right corner
+    # Create a horizontal layout for the buttons
+    button_layout = QHBoxLayout()
+    button_layout.setSpacing(20)  # Space between the buttons
+    button_layout.setContentsMargins(20, 20, 20, 20)  # Consistent margins
+
+    # Sort button
+    sort_button = QPushButton("Sort", view)
+    sort_button.setObjectName("SortButton")
+    sort_button.setStyleSheet(
+        """
+        QPushButton {
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 25px;
+            padding: 10px 20px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        QPushButton:hover {
+            background-color: #2980b9;
+        }
+        QPushButton:pressed {
+            background-color: #1c5985;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        """
+    )
+
+    # Add Music button
     add_music_button = QPushButton("+", view)
     add_music_button.setObjectName("AddMusicButton")
     add_music_button.setStyleSheet(
         """
         QPushButton {
-            background-color: #0078d4;
+            background-color: #3498db;
             color: white;
-            font-size: 18px;
-            border-radius: 25px;
+            font-size: 20px;
+            font-weight: bold;
             width: 50px;
             height: 50px;
+            border-radius: 25px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
         }
         QPushButton:hover {
-            background-color: #005a9e;
+            background-color: #2980b9;
+        }
+        QPushButton:pressed {
+            background-color: #1c5985;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
         }
         """
     )
-    layout.addWidget(add_music_button, alignment=Qt.AlignBottom | Qt.AlignRight)
+
+    # Add buttons to layout
+    button_layout.addWidget(sort_button, alignment=Qt.AlignLeft | Qt.AlignBottom)
+    button_layout.addStretch()  # Adds space between the buttons
+    button_layout.addWidget(add_music_button, alignment=Qt.AlignRight | Qt.AlignBottom)
+
+    # Add the layout to the parent layout
+    layout.addLayout(button_layout)
 
     return view
