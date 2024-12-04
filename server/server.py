@@ -4,9 +4,13 @@ import threading
 import json
 from mutagen.mp3 import MP3
 import pygame
+import vlc
 
 # Initialize pygame and play the music
 pygame.mixer.init()
+
+# VLC player instance
+player = vlc.MediaPlayer()
 
 user_db = {
     "a": "1"
@@ -140,10 +144,9 @@ def login_user(username, password, client_socket):
 def play_music(song_name):
     """Play music from the data/music folder with .mp3 extension using pygame."""
     global current_music
-    current_music = song_name
 
     for music in music_files:
-        if music["filename"] == current_music:
+        if music["filename"] == song_name:
             music["is_playing"] = True
         else:
             music["is_playing"] = False
@@ -158,10 +161,14 @@ def play_music(song_name):
             print(f"Song not found: {file_path}")
             return {"status": "Song not found"}
 
-        pygame.mixer.music.load(file_path)
-        pygame.mixer.music.play()
+        if current_music == song_name:
+            player.play()
+        else:
+            media = vlc.Media(file_path)
+            player.set_media(media)
+            player.play()
 
-        print(f"Playing song: {song_name}")
+        current_music = song_name
         return {"status": "Playing music"}
     except Exception as e:
         print(f"Error playing music: {e}")
@@ -175,7 +182,7 @@ def pause_music():
             music["is_playing"] = False
 
     try:
-        pygame.mixer.music.pause()
+        player.pause()
         return {"status": "Music paused"}
     except Exception as e:
         print(f"Error pausing music: {e}")
@@ -184,33 +191,23 @@ def pause_music():
 
 def forward_music(song_name):
     """Skip forward 10 seconds in the current track."""
-    current_pos_ms = pygame.mixer.music.get_pos()
-
-    if current_pos_ms == -1 or song_name != current_music:
+    if song_name != current_music:
         return {"status": "failed"}
 
-    current_pos = current_pos_ms / 1000
+    current_pos = player.get_time() / 1000
     new_pos = current_pos + 10
-
-    print(current_pos)
-
-    pygame.mixer.music.stop()
-    pygame.mixer.music.play(start=40)
+    player.set_time(int(new_pos * 1000))
     return {"status": "success"}
 
 
 def backward_music(song_name):
     """Skip backward 10 seconds in the current track."""
-    current_pos_ms = pygame.mixer.music.get_pos()
-
-    if current_pos_ms == -1 or song_name != current_music:
+    if song_name != current_music:
         return {"status": "failed"}
 
-    current_pos = current_pos_ms / 1000
-    new_pos = current_pos - 10
-
-    pygame.mixer.music.stop()
-    pygame.mixer.music.play(start=new_pos)
+    current_pos = player.get_time() / 1000
+    new_pos = max(0, current_pos - 10)
+    player.set_time(int(new_pos * 1000))
     return {"status": "success"}
 
 
