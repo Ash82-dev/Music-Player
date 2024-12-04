@@ -60,26 +60,20 @@ class Window(QWidget):
         """Handle removing music from the UI and update the global music list."""
         global music_list
 
-        # Step 1: Update the global music list with the updated music list
-        # First, create a set of filenames from the updated list for easy lookup
         updated_filenames = {music["filename"] for music in updated_music_list}
 
-        # Update music_list by adding new items and keeping the existing ones
         music_list = [music for music in music_list if
-                      music["filename"] in updated_filenames]  # Keep only those in updated list
+                      music["filename"] in updated_filenames]
         music_list.extend(music for music in updated_music_list if
-                          music["filename"] not in [m["filename"] for m in music_list])  # Add missing items
+                          music["filename"] not in [m["filename"] for m in music_list])
 
-        # Step 2: Remove music containers that are not in the updated list
-        music_view = self.stacked_widget.widget(2)  # Music player view
+        music_view = self.stacked_widget.widget(2)
         container_area = music_view.findChild(QWidget, "MusicContainerArea")
         container_layout = container_area.layout()
 
-        # Iterate over all MusicContainer widgets
         for music_container in container_area.findChildren(MusicContainer):
-            container_filename = music_container.name_label.text()  # Assuming name_label holds the filename
+            container_filename = music_container.name_label.text()
 
-            # If the filename of the container is not in the updated music list, remove it
             if container_filename not in updated_filenames:
                 container_layout.removeWidget(music_container)
                 music_container.deleteLater()
