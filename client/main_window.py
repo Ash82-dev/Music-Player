@@ -26,7 +26,7 @@ class Window(QWidget):
         super().__init__()
         self.stacked_widget = QStackedWidget(self)
         self.setWindowTitle("Music Player")
-        self.setGeometry(100, 100, 1200, 800)
+        self.setGeometry(100, 100, 600, 800)
         self.center_window()
 
         self.main_view()
