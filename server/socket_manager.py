@@ -194,3 +194,15 @@ def remove_music(song_name):
     except Exception as e:
         print(f"Error sending remove music request: {e}")
         return "Error remove music"
+
+
+def update_music_list():
+    """send an update music list request to the server"""
+    global client_socket
+
+    update_data = {
+        'action': 'update_music_list'
+    }
+
+    client_socket.send(json.dumps(update_data).encode('utf-8'))
+    json.loads(message_queue.get())

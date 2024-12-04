@@ -63,6 +63,9 @@ def handle_client(client_socket):
                 song_name = data.get("song_name")
                 response = remove_music(song_name)
                 broadcast_message()
+            elif action == "update_music_list":
+                response = update_music_list()
+                broadcast_message()
 
             client_socket.send(json.dumps(response).encode())
         except Exception as e:
@@ -87,6 +90,8 @@ def broadcast_message():
 
 def get_music_list():
     """Return a list of available .mp3 music files."""
+    all_music = []
+
     try:
         for filename in os.listdir(music_folder):
             if filename.endswith(".mp3"):
@@ -96,12 +101,12 @@ def get_music_list():
                     duration = int(audio.info.length)
                     formatted_duration = format_duration(duration)
                     is_playing = current_music == filename
-                    music_files.append({"filename": filename, "duration": formatted_duration, "is_playing": is_playing})
+                    all_music.append({"filename": filename, "duration": formatted_duration, "is_playing": is_playing})
                 except Exception as e:
                     print(f"Error reading metadata for {filename}: {e}")
     except Exception as e:
         print(f"Error reading music files: {e}")
-    return music_files
+    return all_music
 
 
 def format_duration(seconds):
@@ -224,6 +229,21 @@ def remove_music(song_name):
             music_files.remove(music)
             return {"status": "success"}
     return {"status": "failed"}
+
+
+def update_music_list():
+    global music_files
+
+    music_list = get_music_list()
+    if music_list != music_files:
+        music_files = music_list
+        return {
+            "status": "music_list_updated"
+        }
+    else:
+        return {
+            "status": "no_update"
+        }
 
 
 def start_server():

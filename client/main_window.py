@@ -21,6 +21,11 @@ def handle_backward(song_name):
     socket_manager.backward_music(song_name)
 
 
+def handle_add_music():
+    """Handle adding a new music container."""
+    socket_manager.update_music_list()
+
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -39,10 +44,15 @@ class Window(QWidget):
         """handle the broadcast data from server."""
         global music_list
 
-        if len(music_list) == len(music_data):
-            self.update_buttons(music_data)
+        if len(music_list) > len(music_data):
+            # a music has been deleted
+            self.update_remove_list(music_data)
+        elif len(music_list) < len(music_data):
+            # a music has been added
+            self.update_add_list(music_data)
         else:
-            self.update_list(music_data)
+            # a button has been changed
+            self.update_buttons(music_data)
 
     def update_buttons(self, music_list):
         """Update the play/pause buttons in MusicContainer widgets based on music_list."""
@@ -56,7 +66,7 @@ class Window(QWidget):
                 is_playing = music_dict[filename]["is_playing"]
                 music_container.play_button.setText("⏸" if is_playing else "▶")
 
-    def update_list(self, updated_music_list):
+    def update_remove_list(self, updated_music_list):
         """Handle removing music from the UI and update the global music list."""
         global music_list
 
@@ -77,6 +87,15 @@ class Window(QWidget):
             if container_filename not in updated_filenames:
                 container_layout.removeWidget(music_container)
                 music_container.deleteLater()
+
+    def update_add_list(self, new_music_list):
+        """Handle adding music to the UI and update the global music list."""
+        existing_songs = {d["filename"] for d in music_list}
+        new_songs = [d for d in new_music_list if d["filename"] not in existing_songs]
+        print(new_songs)
+
+        for song in new_songs:
+            self.add_music(song["filename"], song["duration"])
 
     def center_window(self):
         """Center the main window on the screen."""
@@ -112,7 +131,7 @@ class Window(QWidget):
         login.findChild(QPushButton, "Switch to Sign Up").clicked.connect(self.switch_to_signup)
 
         # Connect the "+" button
-        music.findChild(QPushButton, "AddMusicButton").clicked.connect(self.handle_add_music)
+        music.findChild(QPushButton, "AddMusicButton").clicked.connect(handle_add_music)
 
     def switch_to_login(self):
         """Switch to the login view."""
@@ -161,14 +180,6 @@ class Window(QWidget):
             self.update_buttons(music_list)
         else:
             QMessageBox.information(self, "Error", response)
-
-    def handle_add_music(self):
-        """Handle adding a new music container."""
-        global music_list
-
-        # Example new music data (replace with user input later)
-        new_song = {"name": f"New Song {len(music_list) + 1}", "duration": "00:00"}
-        self.add_music(new_song["name"], new_song["duration"])
 
     def add_music(self, name, duration):
         """Add a new music container to the view and global music list."""
