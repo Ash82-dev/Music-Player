@@ -134,3 +134,43 @@ def pause_music():
     except Exception as e:
         print(f"Error sending pause music request: {e}")
         return "Error pausing music"
+
+
+def forward_music(song_name):
+    """Skip forward 10 seconds in the current track."""
+    global client_socket
+
+    forward_data = {
+        'action': 'forward_music',
+        "song_name": song_name
+    }
+
+    try:
+        client_socket.send(json.dumps(forward_data).encode('utf-8'))
+        response = json.loads(message_queue.get())
+        status = response.get("status")
+
+        return status
+    except Exception as e:
+        print(f"Error sending forward music request: {e}")
+        return "Error forwarding music"
+
+
+def backward_music(song_name):
+    """Skip backward 10 seconds in the current track."""
+    global client_socket
+
+    backward_data = {
+        'action': 'backward_music',
+        "song_name": song_name
+    }
+
+    try:
+        client_socket.send(json.dumps(backward_data).encode('utf-8'))
+        response = json.loads(message_queue.get())
+        status = response.get("status")
+
+        return status
+    except Exception as e:
+        print(f"Error sending backward music request: {e}")
+        return "Error backward music"
