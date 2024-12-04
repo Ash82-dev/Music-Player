@@ -52,6 +52,12 @@ def handle_client(client_socket):
             elif action == "pause_music":
                 response = pause_music()
                 broadcast_message()
+            elif action == "forward_music":
+                song_name = data.get("song_name")
+                response = forward_music(song_name)
+            elif action == "backward_music":
+                song_name = data.get("song_name")
+                response = backward_music(song_name)
 
             client_socket.send(json.dumps(response).encode())
         except Exception as e:
@@ -75,7 +81,7 @@ def broadcast_message():
 
 
 def get_music_list():
-    """Return a list of available .mp4 music files."""
+    """Return a list of available .mp3 music files."""
     try:
         for filename in os.listdir(music_folder):
             if filename.endswith(".mp3"):
@@ -174,6 +180,38 @@ def pause_music():
     except Exception as e:
         print(f"Error pausing music: {e}")
         return {"status": "Error pausing music"}
+
+
+def forward_music(song_name):
+    """Skip forward 10 seconds in the current track."""
+    current_pos_ms = pygame.mixer.music.get_pos()
+
+    if current_pos_ms == -1 or song_name != current_music:
+        return {"status": "failed"}
+
+    current_pos = current_pos_ms / 1000
+    new_pos = current_pos + 10
+
+    print(current_pos)
+
+    pygame.mixer.music.stop()
+    pygame.mixer.music.play(start=40)
+    return {"status": "success"}
+
+
+def backward_music(song_name):
+    """Skip backward 10 seconds in the current track."""
+    current_pos_ms = pygame.mixer.music.get_pos()
+
+    if current_pos_ms == -1 or song_name != current_music:
+        return {"status": "failed"}
+
+    current_pos = current_pos_ms / 1000
+    new_pos = current_pos - 10
+
+    pygame.mixer.music.stop()
+    pygame.mixer.music.play(start=new_pos)
+    return {"status": "success"}
 
 
 def start_server():
