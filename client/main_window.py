@@ -11,6 +11,16 @@ from views.signup_view import signup_view
 music_list = []
 
 
+def handle_forward(song_name):
+    """Handle forward button click."""
+    socket_manager.forward_music(song_name)
+
+
+def handle_backward(song_name):
+    """Handle backward button click."""
+    socket_manager.backward_music(song_name)
+
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -23,20 +33,21 @@ class Window(QWidget):
 
         # Register the callback
         initialize_socket()
-        register_callback(self.handle_broadcast)
+        register_callback(self.update_buttons)
 
-    def handle_broadcast(self, music_list):
-        """Handle the broadcast response from the server."""
+    def update_buttons(self, music_list):
+        """Update the play/pause buttons in MusicContainer widgets based on music_list."""
         music_view = self.stacked_widget.widget(2)
         container_area = music_view.findChild(QWidget, "MusicContainerArea")
 
+        # Convert music_list to a dictionary for fast lookup
+        music_dict = {music["filename"]: music for music in music_list}
+        # Iterate over MusicContainer widgets and update their buttons
         for music_container in container_area.findChildren(MusicContainer):
-            for music in music_list:
-                if music_container.name_label.text() == music["filename"]:
-                    if music["is_playing"]:
-                        music_container.play_button.setText("⏸")
-                    else:
-                        music_container.play_button.setText("▶")
+            filename = music_container.name_label.text()
+            if filename in music_dict:
+                is_playing = music_dict[filename]["is_playing"]
+                music_container.play_button.setText("⏸" if is_playing else "▶")
 
     def center_window(self):
         """Center the main window on the screen."""
@@ -101,6 +112,7 @@ class Window(QWidget):
             self.switch_to_music_view()
             for music in playlist:
                 self.add_music(music["filename"], music["duration"])
+            self.update_buttons(playlist)
         else:
             QMessageBox.information(self, "Error", response)
 
@@ -115,6 +127,7 @@ class Window(QWidget):
             self.switch_to_music_view()
             for music in playlist:
                 self.add_music(music["filename"], music["duration"])
+            self.update_buttons(playlist)
         else:
             QMessageBox.information(self, "Error", response)
 
@@ -142,8 +155,8 @@ class Window(QWidget):
 
         # Connect container buttons
         music_container.play_button.clicked.connect(lambda: self.toggle_play_pause(name))
-        music_container.forward_button.clicked.connect(lambda: self.handle_forward(name))
-        music_container.backward_button.clicked.connect(lambda: self.handle_backward(name))
+        music_container.forward_button.clicked.connect(lambda: handle_forward(name))
+        music_container.backward_button.clicked.connect(lambda: handle_backward(name))
 
         container_layout.addWidget(music_container)
 
@@ -182,11 +195,3 @@ class Window(QWidget):
         for widget in self.stacked_widget.widget(2).findChildren(QPushButton):
             if widget.text() == "⏸":
                 widget.setText("▶")
-
-    def handle_forward(self, song_name):
-        """Handle forward button click."""
-        print(f"Forward 10 seconds for: {song_name}")
-
-    def handle_backward(self, song_name):
-        """Handle backward button click."""
-        print(f"Backward 10 seconds for: {song_name}")
