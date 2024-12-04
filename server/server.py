@@ -216,6 +216,9 @@ def remove_music(song_name):
     """remove music from music_list"""
     global music_files
 
+    if song_name == current_music:
+        player.pause()
+
     for music in music_files:
         if music["filename"] == song_name:
             music_files.remove(music)
