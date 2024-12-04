@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 
 class MusicContainer(QFrame):
@@ -13,8 +14,8 @@ class MusicContainer(QFrame):
         """)
 
         # Layout for music container
-        layout = QHBoxLayout(self)
-        layout.setSpacing(10)
+        main_layout = QVBoxLayout(self)
+        main_layout.setSpacing(10)
 
         # Song details layout
         details_layout = QVBoxLayout()
@@ -24,7 +25,10 @@ class MusicContainer(QFrame):
         details_layout.addWidget(self.name_label)
         details_layout.addWidget(self.duration_label)
 
-        # Control buttons layout (Play, Forward, Backward)
+        # Add song details to main layout
+        main_layout.addLayout(details_layout)
+
+        # Control buttons layout (Play, Forward, Backward, Remove)
         controls_layout = QHBoxLayout()
 
         # Play button (▶ or ⏸)
@@ -39,11 +43,43 @@ class MusicContainer(QFrame):
         self.backward_button = QPushButton("<<", self)
         self.backward_button.setObjectName("BackwardButton")
 
+        # Remove button (🚮)
+        self.remove_button = QPushButton("🚮", self)
+        self.remove_button.setObjectName("RemoveButton")
+        self.remove_button.setToolTip("Remove this song")
+
         # Add buttons to the controls layout
         controls_layout.addWidget(self.backward_button)
         controls_layout.addWidget(self.play_button)
         controls_layout.addWidget(self.forward_button)
+        controls_layout.addWidget(self.remove_button)
 
-        # Add details and control layouts to the main layout
-        layout.addLayout(details_layout)
-        layout.addLayout(controls_layout)
+        # Add controls to the main layout
+        main_layout.addLayout(controls_layout)
+
+        # Rating layout (Stars)
+        rating_layout = QHBoxLayout()
+        self.rating_stars = []
+        for i in range(1, 6):
+            star_button = QPushButton("★", self)
+            star_button.setFont(QFont("Arial", 14))  # Adjust star size
+            star_button.setStyleSheet("color: #aaa; border: none;")
+            star_button.setCheckable(True)
+            star_button.clicked.connect(lambda _, idx=i: self.update_rating(idx))
+            self.rating_stars.append(star_button)
+            rating_layout.addWidget(star_button)
+
+        # Add rating layout to the main layout
+        main_layout.addLayout(rating_layout)
+
+        # Initialize selected rating
+        self.current_rating = None
+
+    def update_rating(self, rating):
+        # Update the rating and visually highlight stars
+        self.current_rating = rating
+        for idx, star in enumerate(self.rating_stars):
+            if idx < rating:
+                star.setStyleSheet("color: #ffcc00; border: none;")  # Highlighted stars
+            else:
+                star.setStyleSheet("color: #aaa; border: none;")  # Unhighlighted stars
