@@ -83,3 +83,6 @@ class MusicContainer(QFrame):
                 star.setStyleSheet("color: #ffcc00; border: none;")  # Highlighted stars
             else:
                 star.setStyleSheet("color: #aaa; border: none;")  # Unhighlighted stars
+
+    def get_rating(self):
+        return self.current_rating  # Return the rating of this container

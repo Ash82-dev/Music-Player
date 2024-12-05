@@ -183,7 +183,32 @@ class Window(QWidget):
             QMessageBox.information(self, "Error", response)
 
     def sort_music(self):
-        pass
+        """Sort the music containers based on their ratings."""
+        music_view = self.stacked_widget.widget(2)
+        container_area = music_view.findChild(QWidget, "MusicContainerArea")
+        container_layout = container_area.layout()
+
+        # Get a list of all the music containers and their layout positions
+        containers = []
+        for i in range(container_layout.count()):
+            item = container_layout.itemAt(i)
+            widget = item.widget()
+            if isinstance(widget, MusicContainer):
+                containers.append(widget)
+
+        # Sort containers by their ratings in descending order
+        containers.sort(key=lambda container: container.get_rating() if container.get_rating() is not None else 0,
+                        reverse=True)
+
+        # Clear the layout (without deleting the widgets)
+        for i in range(container_layout.count()):
+            item = container_layout.takeAt(0)
+            if item.widget():
+                item.widget().setParent(None)  # Remove but keep the reference
+
+        # Re-add the sorted containers to the layout
+        for container in containers:
+            container_layout.addWidget(container)
 
     def add_music(self, name, duration):
         """Add a new music container to the view and global music list."""
