@@ -204,7 +204,7 @@ class Window(QWidget):
         for i in range(container_layout.count()):
             item = container_layout.takeAt(0)
             if item.widget():
-                item.widget().setParent(None)  # Remove but keep the reference
+                item.widget().setParent(None)
 
         # Re-add the sorted containers to the layout
         for container in containers:
@@ -242,7 +242,7 @@ class Window(QWidget):
                 # Reset all other play/pause buttons to "Play"
                 self.reset_play_buttons()
 
-                button.setText("⏸")  # Update button text to "Pause"
+                button.setText("⏸")
             else:
                 QMessageBox.warning(self, "Error", response)
         else:
@@ -250,7 +250,7 @@ class Window(QWidget):
             response = socket_manager.pause_music()
 
             if response == "Music paused":
-                button.setText("▶")  # Update button text to "Play"
+                button.setText("▶")
             else:
                 QMessageBox.warning(self, "Error", response)
 
@@ -272,7 +272,7 @@ class Window(QWidget):
         socket_manager.remove_music(song_name)
 
         # Find the music view and the container area
-        music_view = self.stacked_widget.widget(2)  # Music player view
+        music_view = self.stacked_widget.widget(2)
         container_area = music_view.findChild(QWidget, "MusicContainerArea")
         container_layout = container_area.layout()
 
@@ -282,4 +282,4 @@ class Window(QWidget):
                 # Remove the container from the layout and delete the widget
                 container_layout.removeWidget(music_container)
                 music_container.deleteLater()
-                break  # Exit the loop once the matching container is removed
+                break

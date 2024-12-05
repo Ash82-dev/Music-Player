@@ -12,7 +12,7 @@ def signup_view():
     # Header Section
     header_label = QLabel("Create an Account", view)
     header_label.setAlignment(Qt.AlignCenter)
-    header_label.setStyleSheet("font-size: 24px; font-weight: bold;")  # Optional styling for header
+    header_label.setStyleSheet("font-size: 24px; font-weight: bold;")
 
     # Form Section
     form_layout = QVBoxLayout()

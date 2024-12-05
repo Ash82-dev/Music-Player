@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
 
@@ -62,7 +61,7 @@ class MusicContainer(QFrame):
         self.rating_stars = []
         for i in range(1, 6):
             star_button = QPushButton("★", self)
-            star_button.setFont(QFont("Arial", 14))  # Adjust star size
+            star_button.setFont(QFont("Arial", 14))
             star_button.setStyleSheet("color: #aaa; border: none;")
             star_button.setCheckable(True)
             star_button.clicked.connect(lambda _, idx=i: self.update_rating(idx))
@@ -80,9 +79,9 @@ class MusicContainer(QFrame):
         self.current_rating = rating
         for idx, star in enumerate(self.rating_stars):
             if idx < rating:
-                star.setStyleSheet("color: #ffcc00; border: none;")  # Highlighted stars
+                star.setStyleSheet("color: #ffcc00; border: none;")
             else:
-                star.setStyleSheet("color: #aaa; border: none;")  # Unhighlighted stars
+                star.setStyleSheet("color: #aaa; border: none;")
 
     def get_rating(self):
-        return self.current_rating  # Return the rating of this container
+        return self.current_rating

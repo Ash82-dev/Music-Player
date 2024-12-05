@@ -7,20 +7,15 @@ from data.user_db.database import get_user_list, add_user, hash_password
 import vlc
 
 
-# VLC player instance
-player = vlc.MediaPlayer()
-
-authenticated_users = {}
-
 # Get the absolute path of the directory containing server.py
 base_dir = os.path.dirname(os.path.abspath(__file__))
 music_folder = os.path.join(base_dir, "..", "data", "music")
 
 clients = []
-
 music_files = []
-
 current_music = ""
+authenticated_users = {}
+player = vlc.MediaPlayer()
 
 
 def handle_client(client_socket):

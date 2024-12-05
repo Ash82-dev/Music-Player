@@ -12,7 +12,7 @@ def login_view():
     # Header Section
     header_label = QLabel("Welcome Back!", view)
     header_label.setAlignment(Qt.AlignCenter)
-    header_label.setStyleSheet("font-size: 24px; font-weight: bold;")  # Optional styling for header
+    header_label.setStyleSheet("font-size: 24px; font-weight: bold;")
 
     # Form Section
     form_layout = QVBoxLayout()

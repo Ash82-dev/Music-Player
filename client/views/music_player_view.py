@@ -29,8 +29,8 @@ def music_player_view():
 
     # Create a horizontal layout for the buttons
     button_layout = QHBoxLayout()
-    button_layout.setSpacing(20)  # Space between the buttons
-    button_layout.setContentsMargins(20, 20, 20, 20)  # Consistent margins
+    button_layout.setSpacing(20)
+    button_layout.setContentsMargins(20, 20, 20, 20)
 
     # Sort button
     sort_button = QPushButton("Sort", view)
@@ -83,7 +83,7 @@ def music_player_view():
 
     # Add buttons to layout
     button_layout.addWidget(sort_button, alignment=Qt.AlignLeft | Qt.AlignBottom)
-    button_layout.addStretch()  # Adds space between the buttons
+    button_layout.addStretch()
     button_layout.addWidget(add_music_button, alignment=Qt.AlignRight | Qt.AlignBottom)
 
     # Add the layout to the parent layout
