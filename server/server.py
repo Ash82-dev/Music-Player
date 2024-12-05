@@ -3,15 +3,12 @@ import socket
 import threading
 import json
 from mutagen.mp3 import MP3
+from data.user_db.database import get_user_list, add_user, hash_password
 import vlc
 
 
 # VLC player instance
 player = vlc.MediaPlayer()
-
-user_db = {
-    "a": "1"
-}
 
 authenticated_users = {}
 
@@ -118,13 +115,13 @@ def format_duration(seconds):
 
 def register_user(username, password, client_socket):
     """Handle user registration."""
-    if username in user_db:
+    if username in get_user_list():
         return {
             "status": "Username already taken",
             "data": []
         }
 
-    user_db[username] = password
+    add_user(username, password)
     authenticated_users[client_socket] = username
     return {
             "status": "Registration successful!",
@@ -134,7 +131,8 @@ def register_user(username, password, client_socket):
 
 def login_user(username, password, client_socket):
     """Handle user login."""
-    if username in user_db and user_db[username] == password:
+    user_db = get_user_list()
+    if username in user_db and user_db[username] == hash_password(password):
         authenticated_users[client_socket] = username
         return {
                 "status": "success",
